@@ -13,7 +13,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             padding: 2rem;
         }
         .container {
@@ -23,6 +22,7 @@
             max-width: 800px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin: 2rem 0;
         }
         .header {
             text-align: center;
@@ -37,12 +37,63 @@
             color: #666;
             font-size: .9rem;
         }
-        .gcse-search {
-            width: 100%;
+        .gcse-search { width: 100%; }
+
+        .history-section {
+            margin-top: 1.5rem;
+            border-top: 1px solid #eee;
+            padding-top: 1.5rem;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: .75rem;
+        }
+        .history-header h2 {
+            font-size: .95rem;
+            color: #555;
+            font-weight: 600;
+        }
+        .history-header button {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: .8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .history-header button:hover {
+            background: #f0f0f0;
+            color: #e74c3c;
+        }
+        .history-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
+        .history-list li {
+            background: #f5f3ff;
+            color: #764ba2;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: .85rem;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .history-list li:hover {
+            background: #764ba2;
+            color: #fff;
+        }
+        .history-empty {
+            color: #bbb;
+            font-size: .85rem;
+            font-style: italic;
         }
         .footer {
             text-align: center;
-            margin-top: 2rem;
             color: #999;
             font-size: .8rem;
         }
@@ -60,10 +111,20 @@
     <div class="container">
         <div class="header">
             <h1>embeddedsearchengine.lugarerrado.com</h1>
-            <p>Mecanismo de busca embarcado â€” Motor de busca integrado para o ecossistema lugarerrado</p>
+            <p>Mecanismo de busca embarcado &mdash; Motor de busca integrado para o ecossistema lugarerrado</p>
         </div>
 
         <div class="gcse-search"></div>
+
+        <div class="history-section">
+            <div class="history-header">
+                <h2>Historico de pesquisas</h2>
+                <button onclick="clearHistory()">Limpar</button>
+            </div>
+            <ul class="history-list" id="historyList">
+                <li class="history-empty">Nenhuma pesquisa ainda</li>
+            </ul>
+        </div>
 
         <div class="footer">
             <a href="https://lugarerrado.com">lugarerrado.com</a>
@@ -71,5 +132,90 @@
     </div>
 
     <script async src="https://cse.google.com/cse.js?cx=018262112823436926736:42mrje_mbne"></script>
+    <script>
+        function getHistory() {
+            try {
+                return JSON.parse(localStorage.getItem('searchHistory') || '[]');
+            } catch { return [] }
+        }
+
+        function saveHistory(terms) {
+            localStorage.setItem('searchHistory', JSON.stringify(terms));
+        }
+
+        function addToHistory(term) {
+            if (!term || !term.trim()) return;
+            term = term.trim();
+            let history = getHistory();
+            history = history.filter(function(t) { return t.toLowerCase() !== term.toLowerCase() });
+            history.unshift(term);
+            if (history.length > 20) history = history.slice(0, 20);
+            saveHistory(history);
+            renderHistory();
+        }
+
+        function renderHistory() {
+            var list = document.getElementById('historyList');
+            var history = getHistory();
+            if (!history.length) {
+                list.innerHTML = '<li class="history-empty">Nenhuma pesquisa ainda</li>';
+                return;
+            }
+            list.innerHTML = '';
+            var fragment = document.createDocumentFragment();
+            history.forEach(function(term) {
+                var li = document.createElement('li');
+                li.textContent = term;
+                li.addEventListener('click', function() {
+                    searchTerm(term);
+                });
+                fragment.appendChild(li);
+            });
+            list.appendChild(fragment);
+        }
+
+        function searchTerm(term) {
+            var input = document.querySelector('.gsc-input input');
+            if (input) {
+                input.value = term;
+                var event = new Event('input', { bubbles: true });
+                input.dispatchEvent(event);
+                var form = input.closest('form');
+                if (form) {
+                    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                } else {
+                    var btn = document.querySelector('.gsc-search-button button');
+                    if (btn) btn.click();
+                }
+            }
+        }
+
+        function clearHistory() {
+            saveHistory([]);
+            renderHistory();
+        }
+
+        function detectSearchTerm() {
+            try {
+                var hash = window.location.hash;
+                var match = hash.match(/gsc\.q=([^&]+)/);
+                if (match) {
+                    var term = decodeURIComponent(match[1].replace(/\+/g, ' '));
+                    if (term) addToHistory(term);
+                }
+            } catch(e) {}
+        }
+
+        window.addEventListener('hashchange', detectSearchTerm);
+
+        var observer = new MutationObserver(function() {
+            detectSearchTerm();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        setInterval(detectSearchTerm, 2000);
+
+        renderHistory();
+    </script>
 </body>
 </html>
