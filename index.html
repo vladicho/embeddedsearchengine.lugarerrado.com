@@ -38,7 +38,6 @@
             font-size: .9rem;
         }
         .gcse-search { width: 100%; }
-
         .history-section {
             margin-top: 1.5rem;
             border-top: 1px solid #eee;
@@ -97,10 +96,7 @@
             color: #999;
             font-size: .8rem;
         }
-        .footer a {
-            color: #764ba2;
-            text-decoration: none;
-        }
+        .footer a { color: #764ba2; text-decoration: none; }
         @media (max-width: 600px) {
             .container { padding: 1.5rem; }
             .header h1 { font-size: 1.3rem; }
@@ -113,9 +109,7 @@
             <h1>embeddedsearchengine.lugarerrado.com</h1>
             <p>Mecanismo de busca embarcado &mdash; Motor de busca integrado para o ecossistema lugarerrado</p>
         </div>
-
         <div class="gcse-search"></div>
-
         <div class="history-section">
             <div class="history-header">
                 <h2>Historico de pesquisas</h2>
@@ -125,7 +119,6 @@
                 <li class="history-empty">Nenhuma pesquisa ainda</li>
             </ul>
         </div>
-
         <div class="footer">
             <a href="https://lugarerrado.com">lugarerrado.com</a>
         </div>
@@ -133,10 +126,10 @@
 
     <script async src="https://cse.google.com/cse.js?cx=018262112823436926736:42mrje_mbne"></script>
     <script>
+        var _searchCaptured = false;
+
         function getHistory() {
-            try {
-                return JSON.parse(localStorage.getItem('searchHistory') || '[]');
-            } catch { return [] }
+            try { return JSON.parse(localStorage.getItem('searchHistory') || '[]') } catch { return [] }
         }
 
         function saveHistory(terms) {
@@ -146,7 +139,7 @@
         function addToHistory(term) {
             if (!term || !term.trim()) return;
             term = term.trim();
-            let history = getHistory();
+            var history = getHistory();
             history = history.filter(function(t) { return t.toLowerCase() !== term.toLowerCase() });
             history.unshift(term);
             if (history.length > 20) history = history.slice(0, 20);
@@ -162,30 +155,24 @@
                 return;
             }
             list.innerHTML = '';
-            var fragment = document.createDocumentFragment();
             history.forEach(function(term) {
                 var li = document.createElement('li');
                 li.textContent = term;
                 li.addEventListener('click', function() {
                     searchTerm(term);
                 });
-                fragment.appendChild(li);
+                list.appendChild(li);
             });
-            list.appendChild(fragment);
         }
 
         function searchTerm(term) {
             var input = document.querySelector('.gsc-input input');
             if (input) {
                 input.value = term;
-                var event = new Event('input', { bubbles: true });
-                input.dispatchEvent(event);
-                var form = input.closest('form');
+                input.focus();
+                var form = input.closest('form.gsc-search-box');
                 if (form) {
-                    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-                } else {
-                    var btn = document.querySelector('.gsc-search-button button');
-                    if (btn) btn.click();
+                    form.querySelector('.gsc-search-button button').click();
                 }
             }
         }
@@ -195,25 +182,42 @@
             renderHistory();
         }
 
-        function detectSearchTerm() {
-            try {
-                var hash = window.location.hash;
-                var match = hash.match(/gsc\.q=([^&]+)/);
-                if (match) {
-                    var term = decodeURIComponent(match[1].replace(/\+/g, ' '));
-                    if (term) addToHistory(term);
-                }
-            } catch(e) {}
+        function watchForSearchBox() {
+            if (_searchCaptured) return;
+            var input = document.querySelector('.gsc-input input');
+            if (!input) { setTimeout(watchForSearchBox, 500); return; }
+
+            var form = input.closest('form.gsc-search-box');
+            if (!form) { setTimeout(watchForSearchBox, 500); return; }
+
+            _searchCaptured = true;
+
+            form.addEventListener('submit', function(e) {
+                setTimeout(function() {
+                    var val = input.value.trim();
+                    if (val) addToHistory(val);
+                }, 100);
+            });
+
+            var btn = form.querySelector('.gsc-search-button button');
+            if (btn) {
+                btn.addEventListener('click', function() {
+                    setTimeout(function() {
+                        var val = input.value.trim();
+                        if (val) addToHistory(val);
+                    }, 100);
+                });
+            }
         }
 
-        window.addEventListener('hashchange', detectSearchTerm);
+        window.addEventListener('load', function() {
+            setTimeout(watchForSearchBox, 1000);
+        });
 
         var observer = new MutationObserver(function() {
-            detectSearchTerm();
+            if (!_searchCaptured) watchForSearchBox();
         });
         observer.observe(document.body, { childList: true, subtree: true });
-
-        setInterval(detectSearchTerm, 2000);
 
         renderHistory();
     </script>
