@@ -19,7 +19,7 @@
             background: rgba(255,255,255,0.95);
             border-radius: 24px;
             padding: 3rem;
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             margin: 2rem 0;
@@ -33,11 +33,55 @@
             color: #333;
             margin-bottom: .5rem;
         }
-        .header p {
-            color: #666;
-            font-size: .9rem;
+        .header p { color: #666; font-size: .9rem; }
+
+        .project-selector {
+            margin-bottom: 1rem;
         }
+        .project-selector label {
+            font-size: .85rem;
+            color: #555;
+            font-weight: 600;
+            display: block;
+            margin-bottom: .5rem;
+        }
+        .project-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+        }
+        .project-grid button {
+            padding: 6px 14px;
+            border: 1.5px solid #e0d8f0;
+            background: #faf8ff;
+            border-radius: 20px;
+            font-size: .8rem;
+            cursor: pointer;
+            color: #555;
+            transition: all .15s;
+        }
+        .project-grid button:hover {
+            border-color: #764ba2;
+            color: #764ba2;
+        }
+        .project-grid button.active {
+            background: #764ba2;
+            color: #fff;
+            border-color: #764ba2;
+        }
+        .project-grid button.opt-data {
+            background: #fff3e0;
+            border-color: #ffcc80;
+            color: #e65100;
+        }
+        .project-grid button.opt-data.active {
+            background: #e65100;
+            border-color: #e65100;
+            color: #fff;
+        }
+
         .gcse-search { width: 100%; }
+
         .history-section {
             margin-top: 1.5rem;
             border-top: 1px solid #eee;
@@ -63,40 +107,61 @@
             padding: 4px 8px;
             border-radius: 4px;
         }
-        .history-header button:hover {
-            background: #f0f0f0;
-            color: #e74c3c;
+        .history-header button:hover { background: #f0f0f0; color: #e74c3c; }
+
+        .history-group {
+            margin-bottom: 1rem;
+        }
+        .history-group-title {
+            font-size: .8rem;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: .4rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .history-group-title .badge {
+            background: #f0ecfc;
+            color: #764ba2;
+            font-size: .7rem;
+            padding: 1px 8px;
+            border-radius: 10px;
         }
         .history-list {
             list-style: none;
             display: flex;
             flex-wrap: wrap;
-            gap: .5rem;
+            gap: .4rem;
         }
         .history-list li {
             background: #f5f3ff;
             color: #764ba2;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: .85rem;
+            padding: 5px 12px;
+            border-radius: 16px;
+            font-size: .82rem;
             cursor: pointer;
             transition: all .15s;
         }
-        .history-list li:hover {
-            background: #764ba2;
-            color: #fff;
+        .history-list li:hover { background: #764ba2; color: #fff; }
+        .history-list li .time {
+            color: #bbb;
+            font-size: .65rem;
+            margin-left: 6px;
         }
+        .history-list li:hover .time { color: rgba(255,255,255,.6); }
         .history-empty {
             color: #bbb;
             font-size: .85rem;
             font-style: italic;
+            padding: .5rem 0;
         }
-        .footer {
-            text-align: center;
-            color: #999;
-            font-size: .8rem;
-        }
+
+        .footer { text-align: center; margin-top: 2rem; color: #999; font-size: .8rem; }
         .footer a { color: #764ba2; text-decoration: none; }
+
         @media (max-width: 600px) {
             .container { padding: 1.5rem; }
             .header h1 { font-size: 1.3rem; }
@@ -109,16 +174,22 @@
             <h1>embeddedsearchengine.lugarerrado.com</h1>
             <p>Mecanismo de busca embarcado &mdash; Motor de busca integrado para o ecossistema lugarerrado</p>
         </div>
+
+        <div class="project-selector">
+            <label>Projeto destino da pesquisa:</label>
+            <div class="project-grid" id="projectGrid"></div>
+        </div>
+
         <div class="gcse-search"></div>
+
         <div class="history-section">
             <div class="history-header">
                 <h2>Historico de pesquisas</h2>
-                <button onclick="clearHistory()">Limpar</button>
+                <button onclick="clearHistory()">Limpar tudo</button>
             </div>
-            <ul class="history-list" id="historyList">
-                <li class="history-empty">Nenhuma pesquisa ainda</li>
-            </ul>
+            <div id="historyContainer"></div>
         </div>
+
         <div class="footer">
             <a href="https://lugarerrado.com">lugarerrado.com</a>
         </div>
@@ -126,105 +197,151 @@
 
     <script async src="https://cse.google.com/cse.js?cx=018262112823436926736:42mrje_mbne"></script>
     <script>
-        var _searchCaptured = false;
+        var PROJETOS = ["Data", "feed", "insights", "challenge", "learning", "market", "appstore", "hub", "teams", "networking", "partnership", "troubleshooting", "endcustomer", "about", "admin", "embeddedsearchengine", "documentation"];
+        var projetoAtivo = "Data";
+        var capturou = false;
+
+        function hoje() {
+            return new Date().toISOString().slice(0, 10);
+        }
 
         function getHistory() {
-            try { return JSON.parse(localStorage.getItem('searchHistory') || '[]') } catch { return [] }
+            try { return JSON.parse(localStorage.getItem('searchHistoryV2') || '{}') } catch { return {} }
         }
 
-        function saveHistory(terms) {
-            localStorage.setItem('searchHistory', JSON.stringify(terms));
+        function saveHistory(data) {
+            localStorage.setItem('searchHistoryV2', JSON.stringify(data));
         }
 
-        function addToHistory(term) {
+        function addToHistory(term, projeto) {
             if (!term || !term.trim()) return;
             term = term.trim();
-            var history = getHistory();
-            history = history.filter(function(t) { return t.toLowerCase() !== term.toLowerCase() });
-            history.unshift(term);
-            if (history.length > 20) history = history.slice(0, 20);
-            saveHistory(history);
+            if (!projeto) projeto = projetoAtivo;
+
+            var data = getHistory();
+            if (!data[projeto]) data[projeto] = [];
+
+            data[projeto] = data[projeto].filter(function(t) { return t.q.toLowerCase() !== term.toLowerCase() });
+
+            data[projeto].unshift({ q: term, t: Date.now() });
+
+            Object.keys(data).forEach(function(p) {
+                if (data[p].length > 30) data[p] = data[p].slice(0, 30);
+            });
+
+            saveHistory(data);
             renderHistory();
         }
 
-        function renderHistory() {
-            var list = document.getElementById('historyList');
-            var history = getHistory();
-            if (!history.length) {
-                list.innerHTML = '<li class="history-empty">Nenhuma pesquisa ainda</li>';
-                return;
-            }
-            list.innerHTML = '';
-            history.forEach(function(term) {
-                var li = document.createElement('li');
-                li.textContent = term;
-                li.addEventListener('click', function() {
-                    searchTerm(term);
-                });
-                list.appendChild(li);
+        function formatTime(ts) {
+            var d = new Date(ts);
+            var h = d.getHours().toString().padStart(2, '0');
+            var m = d.getMinutes().toString().padStart(2, '0');
+            return h + ':' + m;
+        }
+
+        function ativarProjeto(nome) {
+            projetoAtivo = nome;
+            document.querySelectorAll('.project-grid button').forEach(function(b) {
+                b.classList.toggle('active', b.dataset.proj === nome);
             });
         }
 
-        function searchTerm(term) {
+        function criarBotoesProjeto() {
+            var grid = document.getElementById('projectGrid');
+            PROJETOS.forEach(function(p) {
+                var btn = document.createElement('button');
+                btn.textContent = p === "Data" ? "📅 " + hoje() : p;
+                btn.dataset.proj = p;
+                if (p === "Data") btn.classList.add('opt-data');
+                btn.addEventListener('click', function() { ativarProjeto(p); });
+                grid.appendChild(btn);
+            });
+            ativarProjeto("Data");
+        }
+
+        function renderHistory() {
+            var container = document.getElementById('historyContainer');
+            var data = getHistory();
+            var total = Object.values(data).reduce(function(s, arr) { return s + arr.length }, 0);
+
+            if (total === 0) {
+                container.innerHTML = '<div class="history-empty">Nenhuma pesquisa ainda</div>';
+                return;
+            }
+
+            var html = '';
+            Object.keys(data).forEach(function(projeto) {
+                var items = data[projeto];
+                if (!items || !items.length) return;
+                html += '<div class="history-group">';
+                html += '<div class="history-group-title">' + projeto + ' <span class="badge">' + items.length + '</span></div>';
+                html += '<ul class="history-list">';
+                items.forEach(function(item) {
+                    html += '<li onclick="pesquisar(\'' + item.q.replace(/'/g, "\\'") + '\')">' + item.q + ' <span class="time">' + formatTime(item.t) + '</span></li>';
+                });
+                html += '</ul></div>';
+            });
+            container.innerHTML = html;
+        }
+
+        function pesquisar(term) {
             var input = document.querySelector('.gsc-input input');
             if (input) {
                 input.value = term;
                 input.focus();
                 var form = input.closest('form.gsc-search-box');
                 if (form) {
-                    form.querySelector('.gsc-search-button button').click();
+                    var btn = form.querySelector('.gsc-search-button button');
+                    if (btn) btn.click();
                 }
             }
         }
 
         function clearHistory() {
-            saveHistory([]);
-            renderHistory();
+            if (confirm('Limpar todo o historico de pesquisas?')) {
+                saveHistory({});
+                renderHistory();
+            }
         }
 
-        function captureSearch() {
+        function capturarBusca() {
             var input = document.querySelector('.gsc-input input');
-            if (!input) return false;
-
+            if (!input) return;
             var val = input.value.trim();
-            if (val) addToHistory(val);
-            return true;
+            if (val) addToHistory(val, projetoAtivo);
         }
 
-        function watchForSearchBox() {
-            if (_searchCaptured) return;
+        function vigiarBusca() {
+            if (capturou) return;
             var input = document.querySelector('.gsc-input input');
-            if (!input) { setTimeout(watchForSearchBox, 500); return; }
+            if (!input) { setTimeout(vigiarBusca, 500); return; }
 
             var form = input.closest('form.gsc-search-box');
-            if (!form) { setTimeout(watchForSearchBox, 500); return; }
+            if (!form) { setTimeout(vigiarBusca, 500); return; }
 
-            _searchCaptured = true;
+            capturou = true;
 
             input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    setTimeout(captureSearch, 200);
-                }
+                if (e.key === 'Enter') setTimeout(capturarBusca, 300);
             });
 
             var btn = form.querySelector('.gsc-search-button button');
             if (btn) {
-                btn.addEventListener('click', function() {
-                    setTimeout(captureSearch, 200);
-                });
+                btn.addEventListener('click', function() { setTimeout(capturarBusca, 300); });
             }
         }
 
         window.addEventListener('load', function() {
-            setTimeout(watchForSearchBox, 1000);
+            criarBotoesProjeto();
+            renderHistory();
+            setTimeout(vigiarBusca, 1000);
         });
 
-        var observer = new MutationObserver(function() {
-            if (!_searchCaptured) watchForSearchBox();
+        var obs = new MutationObserver(function() {
+            if (!capturou) vigiarBusca();
         });
-        observer.observe(document.body, { childList: true, subtree: true });
-
-        renderHistory();
+        obs.observe(document.body, { childList: true, subtree: true });
     </script>
 </body>
 </html>
