@@ -205,32 +205,31 @@
             return new Date().toISOString().slice(0, 10);
         }
 
+        var API = 'https://documentation.lugarerrado.com/api/search-history';
+
         function getHistory() {
-            try { return JSON.parse(localStorage.getItem('searchHistoryV2') || '{}') } catch { return {} }
+            try {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', API, false);
+                xhr.send();
+                if (xhr.status === 200) return JSON.parse(xhr.responseText);
+            } catch(e) {}
+            return {};
         }
 
-        function saveHistory(data) {
-            localStorage.setItem('searchHistoryV2', JSON.stringify(data));
+        function saveHistoryRemoto(term, projeto) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', API, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({ q: term, projeto: projeto }));
         }
 
         function addToHistory(term, projeto) {
             if (!term || !term.trim()) return;
             term = term.trim();
             if (!projeto) projeto = projetoAtivo;
-
-            var data = getHistory();
-            if (!data[projeto]) data[projeto] = [];
-
-            data[projeto] = data[projeto].filter(function(t) { return t.q.toLowerCase() !== term.toLowerCase() });
-
-            data[projeto].unshift({ q: term, t: Date.now() });
-
-            Object.keys(data).forEach(function(p) {
-                if (data[p].length > 30) data[p] = data[p].slice(0, 30);
-            });
-
-            saveHistory(data);
-            renderHistory();
+            saveHistoryRemoto(term, projeto);
+            setTimeout(renderHistory, 300);
         }
 
         function formatTime(ts) {
@@ -274,10 +273,11 @@
             Object.keys(data).forEach(function(projeto) {
                 var items = data[projeto];
                 if (!items || !items.length) return;
+                var exibir = items.slice(0, 10);
                 html += '<div class="history-group">';
-                html += '<div class="history-group-title">' + projeto + ' <span class="badge">' + items.length + '</span></div>';
+                html += '<div class="history-group-title">' + projeto + ' <span class="badge">ultimas ' + exibir.length + '</span></div>';
                 html += '<ul class="history-list">';
-                items.forEach(function(item) {
+                exibir.forEach(function(item) {
                     html += '<li onclick="pesquisar(\'' + item.q.replace(/'/g, "\\'") + '\')">' + item.q + ' <span class="time">' + formatTime(item.t) + '</span></li>';
                 });
                 html += '</ul></div>';
