@@ -182,6 +182,15 @@
             renderHistory();
         }
 
+        function captureSearch() {
+            var input = document.querySelector('.gsc-input input');
+            if (!input) return false;
+
+            var val = input.value.trim();
+            if (val) addToHistory(val);
+            return true;
+        }
+
         function watchForSearchBox() {
             if (_searchCaptured) return;
             var input = document.querySelector('.gsc-input input');
@@ -192,20 +201,16 @@
 
             _searchCaptured = true;
 
-            form.addEventListener('submit', function(e) {
-                setTimeout(function() {
-                    var val = input.value.trim();
-                    if (val) addToHistory(val);
-                }, 100);
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    setTimeout(captureSearch, 200);
+                }
             });
 
             var btn = form.querySelector('.gsc-search-button button');
             if (btn) {
                 btn.addEventListener('click', function() {
-                    setTimeout(function() {
-                        var val = input.value.trim();
-                        if (val) addToHistory(val);
-                    }, 100);
+                    setTimeout(captureSearch, 200);
                 });
             }
         }
