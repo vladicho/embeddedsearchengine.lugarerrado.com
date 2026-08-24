@@ -1,361 +1,45 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>embeddedsearchengine.lugarerrado.com</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 2rem;
-        }
-        .container {
-            background: rgba(255,255,255,0.95);
-            border-radius: 24px;
-            padding: 3rem;
-            max-width: 900px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            margin: 2rem 0;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .header h1 {
-            font-size: 1.75rem;
-            color: #333;
-            margin-bottom: .5rem;
-        }
-        .header p { color: #666; font-size: .9rem; }
-
-        .project-selector {
-            margin-bottom: 1rem;
-        }
-        .project-selector label {
-            font-size: .85rem;
-            color: #555;
-            font-weight: 600;
-            display: block;
-            margin-bottom: .5rem;
-        }
-        .project-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .4rem;
-        }
-        .project-grid button {
-            padding: 6px 14px;
-            border: 1.5px solid #e0d8f0;
-            background: #faf8ff;
-            border-radius: 20px;
-            font-size: .8rem;
-            cursor: pointer;
-            color: #555;
-            transition: all .15s;
-        }
-        .project-grid button:hover {
-            border-color: #764ba2;
-            color: #764ba2;
-        }
-        .project-grid button.active {
-            background: #764ba2;
-            color: #fff;
-            border-color: #764ba2;
-        }
-        .project-grid button.opt-data {
-            background: #fff3e0;
-            border-color: #ffcc80;
-            color: #e65100;
-        }
-        .project-grid button.opt-data.active {
-            background: #e65100;
-            border-color: #e65100;
-            color: #fff;
-        }
-
-        .gcse-search { width: 100%; }
-
-        .history-section {
-            margin-top: 1.5rem;
-            border-top: 1px solid #eee;
-            padding-top: 1.5rem;
-        }
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: .75rem;
-        }
-        .history-header h2 {
-            font-size: .95rem;
-            color: #555;
-            font-weight: 600;
-        }
-        .history-header button {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: .8rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-        .history-header button:hover { background: #f0f0f0; color: #e74c3c; }
-
-        .history-group {
-            margin-bottom: 1rem;
-        }
-        .history-group-title {
-            font-size: .8rem;
-            font-weight: 600;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-            margin-bottom: .4rem;
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-        }
-        .history-group-title .badge {
-            background: #f0ecfc;
-            color: #764ba2;
-            font-size: .7rem;
-            padding: 1px 8px;
-            border-radius: 10px;
-        }
-        .history-list {
-            list-style: none;
-            display: flex;
-            flex-wrap: wrap;
-            gap: .4rem;
-        }
-        .history-list li {
-            background: #f5f3ff;
-            color: #764ba2;
-            padding: 5px 12px;
-            border-radius: 16px;
-            font-size: .82rem;
-            cursor: pointer;
-            transition: all .15s;
-        }
-        .history-list li:hover { background: #764ba2; color: #fff; }
-        .history-list li .time {
-            color: #bbb;
-            font-size: .65rem;
-            margin-left: 6px;
-        }
-        .history-list li:hover .time { color: rgba(255,255,255,.6); }
-        .history-empty {
-            color: #bbb;
-            font-size: .85rem;
-            font-style: italic;
-            padding: .5rem 0;
-        }
-
-        .footer { text-align: center; margin-top: 2rem; color: #999; font-size: .8rem; }
-        .footer a { color: #764ba2; text-decoration: none; }
-
-        @media (max-width: 600px) {
-            .container { padding: 1.5rem; }
-            .header h1 { font-size: 1.3rem; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Busca Lugar Errado</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;color:#292631;padding:2rem}.container{background:rgba(255,255,255,.97);border-radius:24px;padding:3rem;max-width:920px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.28);margin:2rem auto}.header{text-align:center;margin-bottom:2rem}.header h1{font-size:1.8rem;margin-bottom:.45rem}.header p{color:#686370;font-size:.92rem}.project-selector{margin-bottom:1.2rem}.project-selector label{font-size:.85rem;color:#555;font-weight:650;display:block;margin-bottom:.55rem}.project-grid{display:flex;flex-wrap:wrap;gap:.42rem}.project-grid button{padding:6px 14px;border:1.5px solid #e0d8f0;background:#faf8ff;border-radius:20px;font-size:.8rem;cursor:pointer;color:#555;transition:.15s}.project-grid button:hover{border-color:#764ba2;color:#764ba2}.project-grid button.active{background:#764ba2;color:#fff;border-color:#764ba2}.project-grid button.opt-data{background:#fff3e0;border-color:#ffcc80;color:#e65100}.project-grid button.opt-data.active{background:#e65100;border-color:#e65100;color:#fff}.search-form{display:flex;gap:.65rem;margin-top:1.25rem}.search-form input{flex:1;min-width:0;border:1.5px solid #d9d3e3;border-radius:14px;padding:.95rem 1.05rem;font-size:1rem;outline:0}.search-form input:focus{border-color:#764ba2;box-shadow:0 0 0 3px rgba(118,75,162,.12)}.search-form button,.more-button{border:0;border-radius:14px;background:#6741a1;color:#fff;font-weight:650;padding:0 1.35rem;cursor:pointer}.search-form button:hover,.more-button:hover{background:#533184}.search-form button:disabled,.more-button:disabled{opacity:.6;cursor:wait}.status{display:none;margin:1.25rem 0 .25rem;padding:.9rem 1rem;border-radius:12px;font-size:.9rem}.status.visible{display:block}.status.loading{background:#f2edfb;color:#5e3b8a}.status.error{background:#fff0f0;color:#a93636}.results{margin-top:1.2rem}.result{padding:1.15rem 0;border-bottom:1px solid #ece9f0}.result:last-child{border-bottom:0}.result a{color:#4f2d8a;font-size:1.08rem;font-weight:650;text-decoration:none}.result a:hover{text-decoration:underline}.result-url{color:#39704b;font-size:.75rem;margin:.3rem 0 .4rem;overflow-wrap:anywhere}.result p{color:#55515b;font-size:.9rem;line-height:1.5}.result-meta{color:#96909d;font-size:.7rem;margin-top:.45rem}.suggestions{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.9rem}.suggestions button{background:#f3effa;border:0;color:#6741a1;border-radius:15px;padding:5px 11px;cursor:pointer}.more-wrap{text-align:center;margin:1.3rem 0 .4rem}.more-button{padding:.75rem 1.2rem}.history-section{margin-top:1.7rem;border-top:1px solid #eee;padding-top:1.5rem}.history-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}.history-header h2{font-size:.95rem;color:#555;font-weight:650}.history-header button{background:none;border:0;color:#999;cursor:pointer;font-size:.8rem;padding:4px 8px}.history-header button:hover{color:#c53b3b}.history-group{margin-bottom:1rem}.history-group-title{font-size:.8rem;font-weight:650;color:#999;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}.badge{background:#f0ecfc;color:#764ba2;font-size:.7rem;padding:1px 8px;border-radius:10px;margin-left:.35rem}.history-list{list-style:none;display:flex;flex-wrap:wrap;gap:.4rem}.history-list li{background:#f5f3ff;color:#764ba2;padding:5px 12px;border-radius:16px;font-size:.82rem;cursor:pointer}.history-list li:hover{background:#764ba2;color:#fff}.time{color:#bbb;font-size:.65rem;margin-left:6px}.history-empty{color:#aaa;font-size:.85rem;font-style:italic;padding:.5rem 0}.footer{text-align:center;margin-top:2rem;font-size:.8rem}.footer a{color:#764ba2;text-decoration:none}@media(max-width:600px){body{padding:.65rem}.container{padding:1.4rem;margin:.6rem auto;border-radius:18px}.header h1{font-size:1.35rem}.search-form{flex-direction:column}.search-form button{padding:.85rem}}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>embeddedsearchengine.lugarerrado.com</h1>
-            <p>Mecanismo de busca embarcado &mdash; Motor de busca integrado para o ecossistema lugarerrado</p>
-        </div>
-
-        <div class="project-selector">
-            <label>Projeto destino da pesquisa:</label>
-            <div class="project-grid" id="projectGrid"></div>
-        </div>
-
-        <div class="gcse-search"></div>
-
-        <div class="history-section">
-            <div class="history-header">
-                <h2>Historico de pesquisas</h2>
-                <button onclick="clearHistory()">Limpar tudo</button>
-            </div>
-            <div id="historyContainer"></div>
-        </div>
-
-        <div class="footer">
-            <a href="https://lugarerrado.com">lugarerrado.com</a>
-        </div>
-    </div>
-
-    <script async src="https://cse.google.com/cse.js?cx=018262112823436926736:42mrje_mbne"></script>
-    <script>
-        var PROJETOS = ["Data", "feed", "insights", "challenge", "learning", "market", "appstore", "hub", "teams", "networking", "partnership", "troubleshooting", "endcustomer", "about", "admin", "embeddedsearchengine", "documentation"];
-        var projetoAtivo = "Data";
-        var capturou = false;
-
-        function hoje() {
-            return new Date().toISOString().slice(0, 10);
-        }
-
-        var API = 'https://documentation.lugarerrado.com/api/search-history';
-
-        function getHistory() {
-            try {
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', API, false);
-                xhr.send();
-                if (xhr.status === 200) return JSON.parse(xhr.responseText);
-            } catch(e) {}
-            return {};
-        }
-
-        function saveHistoryRemoto(term, projeto) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', API, true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send(JSON.stringify({ q: term, projeto: projeto }));
-        }
-
-        function addToHistory(term, projeto) {
-            if (!term || !term.trim()) return;
-            term = term.trim();
-            if (!projeto) projeto = projetoAtivo;
-            saveHistoryRemoto(term, projeto);
-            setTimeout(renderHistory, 300);
-        }
-
-        function formatTime(ts) {
-            var d = new Date(ts);
-            var h = d.getHours().toString().padStart(2, '0');
-            var m = d.getMinutes().toString().padStart(2, '0');
-            return h + ':' + m;
-        }
-
-        function escapeHtml(value) {
-            return String(value).replace(/[&<>"']/g, function(char) {
-                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char];
-            });
-        }
-
-        function ativarProjeto(nome) {
-            projetoAtivo = nome;
-            document.querySelectorAll('.project-grid button').forEach(function(b) {
-                b.classList.toggle('active', b.dataset.proj === nome);
-            });
-        }
-
-        function criarBotoesProjeto() {
-            var grid = document.getElementById('projectGrid');
-            PROJETOS.forEach(function(p) {
-                var btn = document.createElement('button');
-                btn.textContent = p === "Data" ? "📅 " + hoje() : p;
-                btn.dataset.proj = p;
-                if (p === "Data") btn.classList.add('opt-data');
-                btn.addEventListener('click', function() { ativarProjeto(p); });
-                grid.appendChild(btn);
-            });
-            ativarProjeto("Data");
-        }
-
-        function renderHistory() {
-            var container = document.getElementById('historyContainer');
-            var data = getHistory();
-            var total = Object.values(data).reduce(function(s, arr) { return s + arr.length }, 0);
-
-            if (total === 0) {
-                container.innerHTML = '<div class="history-empty">Nenhuma pesquisa ainda</div>';
-                return;
-            }
-
-            var html = '';
-            Object.keys(data).forEach(function(projeto) {
-                var items = data[projeto];
-                if (!items || !items.length) return;
-                var exibir = items.slice(0, 10);
-                html += '<div class="history-group">';
-                html += '<div class="history-group-title">' + escapeHtml(projeto) + ' <span class="badge">ultimas ' + exibir.length + '</span></div>';
-                html += '<ul class="history-list">';
-                exibir.forEach(function(item) {
-                    var encoded = encodeURIComponent(item.q).replace(/'/g, '%27');
-                    html += '<li data-query="' + encoded + '">' + escapeHtml(item.q) + ' <span class="time">' + formatTime(item.t) + '</span></li>';
-                });
-                html += '</ul></div>';
-            });
-            container.innerHTML = html;
-            container.querySelectorAll('[data-query]').forEach(function(item) {
-                item.addEventListener('click', function() {
-                    pesquisar(decodeURIComponent(item.dataset.query));
-                });
-            });
-        }
-
-        function pesquisar(term) {
-            var input = document.querySelector('.gsc-input input');
-            if (input) {
-                input.value = term;
-                input.focus();
-                var form = input.closest('form.gsc-search-box');
-                if (form) {
-                    var btn = form.querySelector('.gsc-search-button button');
-                    if (btn) btn.click();
-                }
-            }
-        }
-
-        function clearHistory() {
-            if (confirm('Limpar todo o historico de pesquisas?')) {
-                var xhr = new XMLHttpRequest();
-                xhr.open('DELETE', API, true);
-                xhr.onload = function() { renderHistory(); };
-                xhr.send();
-            }
-        }
-
-        function capturarBusca() {
-            var input = document.querySelector('.gsc-input input');
-            if (!input) return;
-            var val = input.value.trim();
-            if (val) addToHistory(val, projetoAtivo);
-        }
-
-        function vigiarBusca() {
-            if (capturou) return;
-            var input = document.querySelector('.gsc-input input');
-            if (!input) { setTimeout(vigiarBusca, 500); return; }
-
-            var form = input.closest('form.gsc-search-box');
-            if (!form) { setTimeout(vigiarBusca, 500); return; }
-
-            capturou = true;
-
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') setTimeout(capturarBusca, 300);
-            });
-
-            var btn = form.querySelector('.gsc-search-button button');
-            if (btn) {
-                btn.addEventListener('click', function() { setTimeout(capturarBusca, 300); });
-            }
-        }
-
-        window.addEventListener('load', function() {
-            criarBotoesProjeto();
-            renderHistory();
-            setTimeout(vigiarBusca, 1000);
-        });
-
-        var obs = new MutationObserver(function() {
-            if (!capturou) vigiarBusca();
-        });
-        obs.observe(document.body, { childList: true, subtree: true });
-    </script>
+  <main class="container">
+    <header class="header"><h1>Busca Lugar Errado</h1><p>Resultados da web reunidos aqui, sem sair da página.</p></header>
+    <section class="project-selector" aria-label="Projeto destino"><label>Projeto destino da pesquisa:</label><div class="project-grid" id="projectGrid"></div></section>
+    <form class="search-form" id="searchForm"><input id="searchInput" type="search" minlength="2" maxlength="200" autocomplete="off" placeholder="O que você procura?" aria-label="Pesquisar na web" required><button id="searchButton" type="submit">Pesquisar</button></form>
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+    <section class="results" id="results" aria-label="Resultados da pesquisa"></section>
+    <div class="suggestions" id="suggestions"></div>
+    <div class="more-wrap" id="moreWrap" hidden><button class="more-button" id="moreButton" type="button">Mais resultados</button></div>
+    <section class="history-section"><div class="history-header"><h2>Histórico de pesquisas</h2><button id="clearButton" type="button">Limpar tudo</button></div><div id="historyContainer"></div></section>
+    <footer class="footer"><a href="https://lugarerrado.com">lugarerrado.com</a></footer>
+  </main>
+  <script>
+    var PROJETOS=["Data","feed","insights","challenge","learning","market","appstore","hub","teams","networking","partnership","troubleshooting","endcustomer","about","admin","embeddedsearchengine","documentation"];
+    var projetoAtivo="Data",paginaAtual=1,consultaAtual="",pesquisando=false;
+    var HISTORY_API="https://documentation.lugarerrado.com/api/search-history";
+    function hoje(){return new Date().toISOString().slice(0,10)}
+    function escapeHtml(value){return String(value).replace(/[&<>"']/g,function(char){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[char]})}
+    function formatTime(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
+    function setStatus(message,kind){var el=document.getElementById("status");el.textContent=message||"";el.className=message?"status visible "+kind:"status"}
+    function ativarProjeto(nome){projetoAtivo=nome;document.querySelectorAll(".project-grid button").forEach(function(b){b.classList.toggle("active",b.dataset.proj===nome)})}
+    function criarBotoesProjeto(){var grid=document.getElementById("projectGrid");PROJETOS.forEach(function(p){var b=document.createElement("button");b.type="button";b.textContent=p==="Data"?"📅 "+hoje():p;b.dataset.proj=p;if(p==="Data")b.classList.add("opt-data");b.addEventListener("click",function(){ativarProjeto(p)});grid.appendChild(b)});ativarProjeto("Data")}
+    async function getHistory(){try{var response=await fetch(HISTORY_API);return response.ok?await response.json():{}}catch(_){return{}}}
+    async function addToHistory(term){try{await fetch(HISTORY_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({q:term,projeto:projetoAtivo})});await renderHistory()}catch(_){}}
+    async function renderHistory(){var container=document.getElementById("historyContainer"),data=await getHistory(),projects=Object.keys(data),total=projects.reduce(function(sum,p){return sum+(Array.isArray(data[p])?data[p].length:0)},0);if(!total){container.innerHTML='<div class="history-empty">Nenhuma pesquisa ainda</div>';return}var html="";projects.forEach(function(project){var items=Array.isArray(data[project])?data[project].slice(0,10):[];if(!items.length)return;html+='<div class="history-group"><div class="history-group-title">'+escapeHtml(project)+'<span class="badge">últimas '+items.length+'</span></div><ul class="history-list">';items.forEach(function(item){html+='<li data-query="'+escapeHtml(item.q)+'">'+escapeHtml(item.q)+'<span class="time">'+formatTime(item.t)+"</span></li>"});html+="</ul></div>"});container.innerHTML=html;container.querySelectorAll("[data-query]").forEach(function(item){item.addEventListener("click",function(){pesquisar(item.dataset.query,1,false)})})}
+    function renderResults(data,append){var container=document.getElementById("results");if(!append)container.innerHTML="";if(!data.results.length&&!append)container.innerHTML='<div class="history-empty">Nenhum resultado encontrado.</div>';data.results.forEach(function(result){var article=document.createElement("article"),engines=result.engines&&result.engines.length?"Fonte: "+result.engines.join(", "):"";article.className="result";article.innerHTML='<a href="'+escapeHtml(result.url)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(result.title)+'</a><div class="result-url">'+escapeHtml(result.url)+"</div>"+(result.content?"<p>"+escapeHtml(result.content)+"</p>":"")+(engines?'<div class="result-meta">'+escapeHtml(engines)+"</div>":"");container.appendChild(article)});var suggestions=document.getElementById("suggestions");suggestions.innerHTML="";(data.suggestions||[]).forEach(function(text){var b=document.createElement("button");b.type="button";b.textContent=text;b.addEventListener("click",function(){pesquisar(text,1,true)});suggestions.appendChild(b)});document.getElementById("moreWrap").hidden=data.results.length===0}
+    async function pesquisar(term,page,saveHistory){term=String(term||"").trim();if(term.length<2||pesquisando)return;pesquisando=true;paginaAtual=page||1;consultaAtual=term;document.getElementById("searchInput").value=term;document.getElementById("searchButton").disabled=true;document.getElementById("moreButton").disabled=true;setStatus("Buscando na web… Se o serviço gratuito estava parado, a primeira busca pode levar até um minuto.","loading");try{var response=await fetch("/api/search?q="+encodeURIComponent(term)+"&pageno="+paginaAtual),data=await response.json();if(!response.ok)throw new Error(data.error||"Não foi possível pesquisar agora.");renderResults(data,paginaAtual>1);setStatus(data.results.length?data.results.length+" resultados nesta página":"","loading");if(saveHistory&&paginaAtual===1)addToHistory(term)}catch(error){setStatus(error.message||"Não foi possível pesquisar agora.","error")}finally{pesquisando=false;document.getElementById("searchButton").disabled=false;document.getElementById("moreButton").disabled=false}}
+    async function clearHistory(){if(!confirm("Limpar todo o histórico de pesquisas?"))return;try{await fetch(HISTORY_API,{method:"DELETE"});await renderHistory()}catch(_){setStatus("Não foi possível limpar o histórico.","error")}}
+    document.getElementById("searchForm").addEventListener("submit",function(e){e.preventDefault();pesquisar(document.getElementById("searchInput").value,1,true)});
+    document.getElementById("moreButton").addEventListener("click",function(){pesquisar(consultaAtual,paginaAtual+1,false)});
+    document.getElementById("clearButton").addEventListener("click",clearHistory);
+    criarBotoesProjeto();renderHistory();
+  </script>
 </body>
 </html>
