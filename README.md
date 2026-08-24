@@ -9,7 +9,7 @@ HTML, Cloudflare Workers, SearXNG e Docker no Render.
 ## Arquitetura
 O Worker publica a interface no domínio `embeddedsearchengine.lugarerrado.com`
 e encaminha as pesquisas para uma instância dedicada do SearXNG. Ela reúne
-resultados de DuckDuckGo, Brave, Bing, Startpage e Wikipédia sem tirar o
+resultados de Bing e Wikipédia sem tirar o
 visitante da página.
 
 O SearXNG é construído pelo Render a partir de `render.yaml` e

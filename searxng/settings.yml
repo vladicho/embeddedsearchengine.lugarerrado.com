@@ -1,10 +1,7 @@
 use_default_settings:
   engines:
     keep_only:
-      - duckduckgo
-      - brave
       - bing
-      - startpage
       - wikipedia
 
 general:
@@ -13,7 +10,7 @@ general:
 
 search:
   safe_search: 1
-  autocomplete: duckduckgo
+  autocomplete: ""
   default_lang: pt-BR
   formats:
     - html

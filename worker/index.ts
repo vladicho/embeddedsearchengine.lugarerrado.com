@@ -91,6 +91,7 @@ async function search(request: Request, env: Env): Promise<Response> {
   backend.searchParams.set("format", "json");
   backend.searchParams.set("language", "pt-BR");
   backend.searchParams.set("safesearch", "1");
+  backend.searchParams.set("engines", "bing,wikipedia");
   backend.searchParams.set("pageno", String(page));
 
   try {
