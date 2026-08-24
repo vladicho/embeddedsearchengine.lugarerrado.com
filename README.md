@@ -4,10 +4,25 @@
 Mecanismo de Busca Embarcado — Motor de busca integrado para o ecossistema lugarerrado.
 
 ## Stack
-HTML, Google CSE, Node.js (API)
+HTML, Google CSE e Cloudflare Workers com Static Assets.
 
 ## Arquitetura
-Microsserviço do ecossistema lugarerrado. Escalado via Docker, orquestrado com NGINX + Cloudflare.
+O Worker publica a interface no domínio `embeddedsearchengine.lugarerrado.com`.
+O histórico de pesquisas é armazenado pela API de
+`documentation.lugarerrado.com` em um banco Cloudflare D1.
+
+## Desenvolvimento
+
+```bash
+pnpm install
+pnpm run dev
+```
+
+## Publicação
+
+```bash
+pnpm run deploy
+```
 
 ---
 

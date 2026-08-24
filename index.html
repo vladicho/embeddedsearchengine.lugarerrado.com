@@ -239,6 +239,12 @@
             return h + ':' + m;
         }
 
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, function(char) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char];
+            });
+        }
+
         function ativarProjeto(nome) {
             projetoAtivo = nome;
             document.querySelectorAll('.project-grid button').forEach(function(b) {
@@ -275,14 +281,20 @@
                 if (!items || !items.length) return;
                 var exibir = items.slice(0, 10);
                 html += '<div class="history-group">';
-                html += '<div class="history-group-title">' + projeto + ' <span class="badge">ultimas ' + exibir.length + '</span></div>';
+                html += '<div class="history-group-title">' + escapeHtml(projeto) + ' <span class="badge">ultimas ' + exibir.length + '</span></div>';
                 html += '<ul class="history-list">';
                 exibir.forEach(function(item) {
-                    html += '<li onclick="pesquisar(\'' + item.q.replace(/'/g, "\\'") + '\')">' + item.q + ' <span class="time">' + formatTime(item.t) + '</span></li>';
+                    var encoded = encodeURIComponent(item.q).replace(/'/g, '%27');
+                    html += '<li data-query="' + encoded + '">' + escapeHtml(item.q) + ' <span class="time">' + formatTime(item.t) + '</span></li>';
                 });
                 html += '</ul></div>';
             });
             container.innerHTML = html;
+            container.querySelectorAll('[data-query]').forEach(function(item) {
+                item.addEventListener('click', function() {
+                    pesquisar(decodeURIComponent(item.dataset.query));
+                });
+            });
         }
 
         function pesquisar(term) {
@@ -300,8 +312,10 @@
 
         function clearHistory() {
             if (confirm('Limpar todo o historico de pesquisas?')) {
-                saveHistory({});
-                renderHistory();
+                var xhr = new XMLHttpRequest();
+                xhr.open('DELETE', API, true);
+                xhr.onload = function() { renderHistory(); };
+                xhr.send();
             }
         }
 
